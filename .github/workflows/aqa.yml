@@ -1,10 +1,10 @@
-name: Run AQAvit 
+name: Run AQAvit
 
 on:
   workflow_dispatch: # Allows the job to be manually triggered
     inputs:
       customizedSdkUrl:
-         description: Download link
+         description: SDK download URL
          required: true
       runParallel:
         description: Run parallel jobs
@@ -21,28 +21,53 @@ on:
 
 env:  # Links to the JDK build under test and the native test libs
   USE_TESTENV_PROPERTIES: true
-  
+
 jobs:
   setup-parallel:
     runs-on: ${{ inputs.runner }}
     if: ${{ inputs.runParallel == true }}
-    name: setup-parallel - ${{ inputs.runner }}_${{ matrix.suite }}
+    name: Create AQA parallelList - ${{ inputs.runner }}_${{ matrix.suite }}
     strategy:
       fail-fast: true
       matrix:
         suite: [functional, openjdk, system, perf]
     steps:
+      - name: Setup windows environment
+        working-directory: ${{ github.workspace }}
+        if: ${{ inputs.runner == 'windows-2019' }}
+        shell: pwsh
+        run: |
+          curl -o windows-binaries.zip ${{ inputs.customizedSdkUrl }}
+          Expand-Archive .\windows-binaries.zip .\tmp
+          $variable = Get-ChildItem .\tmp\
+          $variable = $variable.Basename
+          $variable = "${{ github.workspace }}\tmp\$variable"
+          echo "TEST_JDK_HOME=$variable" >> $env:GITHUB_ENV
+
+      - name: Generate parallelList windows - ${{ matrix.suite }}
+        uses: j-braley/run-aqa@v2.0.2.1
+        if: ${{ inputs.runner == 'windows-2019' }}
+        with:
+          jdksource: 'customized'
+          aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release'
+          build_list: ${{ matrix.suite }}
+          target: ${{ matrix.suite }} # parallellist to generate
+          run_parallel: ${{ inputs.runParallel }}
+          num_machines: 4 # must update test list in next job..for now
+
       - uses: j-braley/run-aqa@v2.0.1
-        name: Generate parallelList - ${{ matrix.suite }}
+        name: Generate parallelList non-windows - ${{ matrix.suite }}
+        if: ${{ inputs.runner != 'windows-2019' }}
         with:
           jdksource: 'customized'
           customizedSdkUrl: ${{ inputs.customizedSdkUrl }}
-          aqa-testsRepo: 'adoptium/aqa-tests:v0.9.4-release'
+          aqa-testsRepo: https://github.com/j-braley/aqafer.git
           build_list: ${{ matrix.suite }} # parallellist to generate
           run_parallel: ${{ inputs.runParallel }}
           num_machines: 4
-          
-      - name: Archive parallelList - ${{ matrix.suite }}
+
+      - name: Archive parallelList non-windows - ${{ matrix.suite }}
+        if: ${{ inputs.runner != 'windows-2019' }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.suite }}-parallelList.mk
@@ -55,22 +80,50 @@ jobs:
     name: Run AQAvit ${{ inputs.runner }} - _${{ matrix.suite }}.${{ matrix.test_list }}
     strategy:
       fail-fast: false
-      matrix: 
+      matrix:
         test_list: ['testList_0', 'testList_1', 'testList_2', 'testList_3'] # numlist is hardcoded...for now
         suite: [functional, openjdk, system, perf]
     steps:
       - name: Download parallelList - ${{ matrix.suite }}
         uses: actions/download-artifact@v2
-        with: 
+        with:
           name: ${{ matrix.suite }}-parallelList.mk
           path: ./
 
-      - name: Run AQA Parallel Test - ${{ matrix.suite }}_${{ matrix.test_list }}
+      - name: Setup windows environment
+        working-directory: ${{ github.workspace }}
+        if: ${{ inputs.runner == 'windows-2019' }}
+        shell: pwsh
+        run: |
+          curl -o windows-binaries.zip ${{ inputs.customizedSdkUrl }}
+          Expand-Archive .\windows-binaries.zip .\tmp
+          $variable = Get-ChildItem .\tmp\
+          $variable = $variable.Basename
+          $variable = "${{ github.workspace }}\tmp\$variable"
+          echo "TEST_JDK_HOME=$variable" >> $env:GITHUB_ENV
+          curl -o windows-testimage.zip ${{ inputs.testImage }}
+          Expand-Archive .\windows-testimage.zip .\tmp-testimage
+          $variable = Get-ChildItem .\tmp-testimage\
+          $variable = $variable.Basename
+          $variable = "${{ github.workspace }}\tmp-testimage\$variable"
+          echo "TESTIMAGE_PATH=$variable" >> $env:GITHUB_ENV
+
+      - name: Run AQA tests parallel (${{ inputs.runner }}) - ${{ matrix.suite }}_${{ matrix.test_list }}
+        uses: j-braley/run-aqa@v2.0.2.1
+        if: ${{ inputs.runner == 'windows-2019' }}
+        with:
+          jdksource: 'customized'
+          version: ${{ inputs.jdkversion }}
+          aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release'
+          build_list: ${{ matrix.suite }}
+          target : -f parallelList.mk ${{ matrix.test_list }}
+
+      - name: Run AQA tests parallel (${{ inputs.runner }}) - ${{ matrix.suite }}_${{ matrix.test_list }}
         uses: j-braley/run-aqa@v2.0.1
         with:
           jdksource: 'customized'
           customizedSdkUrl: ${{ inputs.customizedSdkUrl }}
-          aqa-testsRepo: 'adoptium/aqa-tests:v0.9.4-release'
+          aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release'
           build_list: ${{ matrix.suite }}
           target : -f parallelList.mk ${{ matrix.test_list }}
 
@@ -95,10 +148,10 @@ jobs:
     steps:
     - name: Run AQA Tests - ${{ matrix.target }}.${{ matrix.suite }}
       uses: adoptium/run-aqa@v2
-      with: 
+      with:
         jdksource: 'customized'
-        customizedSdkUrl: ${{ inputs.customizedSdkUrl }} 
-        aqa-testsRepo: 'adoptium/aqa-tests:v0.9.4-release' # Make sure this branch is set to the latest release branch
+        customizedSdkUrl: ${{ inputs.customizedSdkUrl }}
+        aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release' # Make sure this branch is set to the latest release branch
         build_list: ${{ matrix.suite }}
         target: _${{ matrix.target }}.${{ matrix.suite }}
 
