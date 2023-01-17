@@ -130,6 +130,7 @@ jobs:
 
       - name: Run AQA tests parallel (${{ inputs.runner }}) - ${{ matrix.suite }}_${{ matrix.test_list }}
         uses: j-braley/run-aqa@v2.0.1
+        if: ${{ inputs.runner != 'windows-2019' }}
         with:
           jdksource: 'customized'
           customizedSdkUrl: ${{ inputs.customizedSdkUrl }}
