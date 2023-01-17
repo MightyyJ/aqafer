@@ -76,8 +76,7 @@ jobs:
           run_parallel: ${{ inputs.runParallel }}
           num_machines: 4
 
-      - name: Archive parallelList non-windows - ${{ matrix.suite }}
-        if: ${{ inputs.runner != 'windows-2019' }}
+      - name: Archive parallelList - ${{ matrix.suite }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.suite }}-parallelList.mk
