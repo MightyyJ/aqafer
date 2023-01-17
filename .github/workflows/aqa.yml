@@ -61,7 +61,7 @@ jobs:
         with:
           jdksource: 'customized'
           customizedSdkUrl: ${{ inputs.customizedSdkUrl }}
-          aqa-testsRepo: https://github.com/j-braley/aqafer.git
+          aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release'
           build_list: ${{ matrix.suite }} # parallellist to generate
           run_parallel: ${{ inputs.runParallel }}
           num_machines: 4
@@ -77,7 +77,7 @@ jobs:
     runs-on: ${{ inputs.runner }}
     if: ${{ inputs.runParallel == true }}
     needs: setup-parallel
-    name: Run AQAvit ${{ inputs.runner }} - _${{ matrix.suite }}.${{ matrix.test_list }}
+    name: Run AQAvit verification ${{ inputs.runner }} - _${{ matrix.suite }}.${{ matrix.test_list }}
     strategy:
       fail-fast: false
       matrix:
