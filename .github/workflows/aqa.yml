@@ -6,6 +6,16 @@ on:
       customizedSdkUrl:
          description: SDK download URL
          required: true
+      testImage:
+        description: Native Libs (Required for Windows only)
+        required: false
+      jdkVersion:
+        description: JDK Version (Required for Windows only)
+        required: false
+        type: choice
+        options:
+          - 17u
+          - 11u
       runParallel:
         description: Run parallel jobs
         required: true
@@ -101,6 +111,7 @@ jobs:
           $variable = $variable.Basename
           $variable = "${{ github.workspace }}\tmp\$variable"
           echo "TEST_JDK_HOME=$variable" >> $env:GITHUB_ENV
+
           curl -o windows-testimage.zip ${{ inputs.testImage }}
           Expand-Archive .\windows-testimage.zip .\tmp-testimage
           $variable = Get-ChildItem .\tmp-testimage\
@@ -113,7 +124,7 @@ jobs:
         if: ${{ inputs.runner == 'windows-2019' }}
         with:
           jdksource: 'customized'
-          version: ${{ inputs.jdkversion }}
+          version: ${{ inputs.jdkVersion }}
           aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release'
           build_list: ${{ matrix.suite }}
           target : -f parallelList.mk ${{ matrix.test_list }}
