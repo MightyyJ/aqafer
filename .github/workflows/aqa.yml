@@ -55,7 +55,7 @@ jobs:
           echo "TEST_JDK_HOME=$variable" >> $env:GITHUB_ENV
 
       - name: Generate parallelList windows - ${{ matrix.suite }}
-        uses: j-braley/run-aqa@v2.0.2.1
+        uses: j-braley/run-aqa@v2.0.2.2
         if: ${{ inputs.runner == 'windows-2019' }}
         with:
           jdksource: 'customized'
@@ -119,7 +119,7 @@ jobs:
           echo "TESTIMAGE_PATH=$variable" >> $env:GITHUB_ENV
 
       - name: Run AQA tests parallel (${{ inputs.runner }}) - ${{ matrix.suite }}_${{ matrix.test_list }}
-        uses: j-braley/run-aqa@v2.0.2.1
+        uses: j-braley/run-aqa@v2.0.2.2
         if: ${{ inputs.runner == 'windows-2019' }}
         with:
           jdksource: 'customized'
