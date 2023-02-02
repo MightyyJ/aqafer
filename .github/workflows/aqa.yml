@@ -85,7 +85,7 @@ jobs:
   run-aqa-parallel:
     runs-on: ${{ inputs.runner }}
     if: ${{ inputs.runParallel == true }}
-    needs: setup-parallel
+    # needs: setup-parallel
     name: Run AQAvit verification ${{ inputs.runner }} - _${{ matrix.suite }}.${{ matrix.test_list }}
     strategy:
       fail-fast: false
