@@ -90,7 +90,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_list: ['jvm_compiler_1'] # numlist is hardcoded...for now
+        test_list: ['jdk_build_1'] # numlist is hardcoded...for now
         suite: [openjdk]
     steps:
       # - name: Download parallelList - ${{ matrix.suite }}
