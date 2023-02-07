@@ -25,10 +25,10 @@ on:
         required: true
         type: choice
         options:
-          - Alpine
-          - Windows
-          - Linux
-          - MacOS
+          - 'Alpine'
+          - 'Windows'
+          - 'Linux'
+          - 'MacOS'
       runner:
         description: runner
         required: true
@@ -44,7 +44,7 @@ env:  # Links to the JDK build under test and the native test libs
 jobs:
   setup-parallel:
     runs-on: ${{ inputs.runner }}
-    if: ${{ inputs.runParallel == true  && inputs.system != Alpine }}
+    if: ${{ inputs.runParallel == true  && inputs.system != 'Alpine' }}
     name: Create AQA parallelList - ${{ inputs.runner }}_${{ matrix.suite }}
     strategy:
       fail-fast: true
@@ -92,7 +92,7 @@ jobs:
           path: ${{ github.workspace }}/aqa-tests/TKG/parallelList.mk
 
   setup-parallel-docker:
-    if: ${{ inputs.system == Alpine }}
+    if: ${{ inputs.system == 'Alpine' }}
     runs-on: ubuntu-latest
     container:
       image: alpine:latest
@@ -121,7 +121,7 @@ jobs:
           path: ${{ github.workspace }}/aqa-tests/TKG/parallelList.mk
 
   run-aqa-parallel-docker:
-    if: ${{ inputs.system == Alpine }}
+    if: ${{ inputs.system == 'Alpine' }}
     runs-on: ubuntu-latest
     container:
       image: alpine:latest
@@ -161,7 +161,7 @@ jobs:
 
   run-aqa-parallel:
     runs-on: ${{ inputs.runner }}
-    if: ${{ inputs.runParallel == true  && inputs.system != Alpine }}
+    if: ${{ inputs.runParallel == true  && inputs.system != 'Alpine' }}
     needs: setup-parallel
     name: Run AQAvit verification ${{ inputs.runner }} - _${{ matrix.suite }}.${{ matrix.test_list }}
     strategy:
