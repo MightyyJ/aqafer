@@ -105,7 +105,7 @@ jobs:
         suite: [functional]
     steps:
       - name: Install dependencies
-        run: apk add git curl make perl
+        run: apk add git curl make perl bash
 
       - uses: j-braley/run-aqa@v2.0.2.2
         with:
@@ -138,7 +138,7 @@ jobs:
         suite: [functional]
     steps:
       - name: Install dependencies
-        run: apk add apk add git curl make perl freetype-dev fontconfig ttf-dejavu
+        run: apk add apk add bash git curl make perl freetype-dev fontconfig ttf-dejavu
 
       - name: Download parallelList - ${{ matrix.suite }}
         uses: actions/download-artifact@v2
