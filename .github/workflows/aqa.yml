@@ -35,8 +35,8 @@ jobs:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
       credentials:
-        username: ${{ secrets.ACR_REGISTRY_ID }}
-        password: ${{ secrets.ACR_PASSWORD }}
+        username: ${{ secrets.ACR_TOKEN_NAME }}
+        password: ${{ secrets.AZURE_ACR_TOKEN_PASS1 }}
     strategy:
       fail-fast: true
       matrix:
@@ -69,8 +69,8 @@ jobs:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
       credentials:
-        username: ${{ secrets.ACR_REGISTRY_ID }}
-        password: ${{ secrets.ACR_PASSWORD }}
+        username: ${{ secrets.ACR_TOKEN_NAME }}
+        password: ${{ secrets.AZURE_ACR_TOKEN_PASS1 }}
     strategy:
       fail-fast: false
       matrix:
