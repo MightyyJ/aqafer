@@ -51,6 +51,9 @@ jobs:
       env:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
+      credentials:
+        username: ${{ secrets.ACR_REGISTRY_ID }}
+        password: ${{ secrets.ACR_PASSWORD }}
     strategy:
       fail-fast: true
       matrix:
@@ -83,6 +86,9 @@ jobs:
       env:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
+      credentials:
+        username: ${{ secrets.ACR_REGISTRY_ID }}
+        password: ${{ secrets.ACR_PASSWORD }}
     strategy:
       fail-fast: false
       matrix:
