@@ -19,9 +19,6 @@ on:
         type: string
         default: 'adoptium/aqa-tests:v0.9.6-release'
 
-env:  # Links to the JDK build under test and the native test libs
-  USE_TESTENV_PROPERTIES: true
-
 jobs:
 
   setup-parallel-docker:
