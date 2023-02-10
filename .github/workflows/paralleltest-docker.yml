@@ -9,10 +9,6 @@ on:
       testImage:
         description: Native Libs
         required: true
-      runParallel:
-        description: Run parallel jobs
-        required: true
-        type: boolean
       aqatest-repo:
         description: adoptium/aqa-tests repository
         required: true
