@@ -28,15 +28,18 @@ env:  # Links to the JDK build under test and the native test libs
 jobs:
 
   setup-parallel-docker:
-    runs-on: ubuntu-latest
-    container:
-      image: mycoolregistry2023.azurecr.io/samples/alpine:latest
-      env:
-        USE_TESTENV_PROPERTIES: true
-      options: --cpus 1
-      credentials:
-        username: ${{ secrets.ACR_REGISTRY_ID }}
-        password: ${{ secrets.ACR_PASSWORD }}
+    ${{ if inputs.system == 'Alpine' }}:
+      runs-on: ubuntu-latest
+      container:
+        image: mycoolregistry2023.azurecr.io/samples/alpine:latest
+        env:
+          USE_TESTENV_PROPERTIES: true
+        options: --cpus 1
+        credentials:
+          username: ${{ secrets.ACR_TOKEN_NAME }}
+          password: ${{ secrets.AZURE_ACR_TOKEN_PASS1 }}
+    ${{ if inputs.system != 'Alpine' }}:
+      runs-on: ${{ inputs.runner }}
     strategy:
       fail-fast: true
       matrix:
@@ -69,8 +72,8 @@ jobs:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
       credentials:
-        username: ${{ secrets.ACR_REGISTRY_ID }}
-        password: ${{ secrets.ACR_PASSWORD }}
+        username: ${{ secrets.ACR_TOKEN_NAME }}
+        password: ${{ secrets.AZURE_ACR_TOKEN_PASS1 }}
     strategy:
       fail-fast: false
       matrix:
