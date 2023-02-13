@@ -14,22 +14,22 @@ on:
       testImage:
         description: Native Libs URL
         required: true
-      runner:
+      system:
+        description: System being tested
+        required: true
+      pool:
         description: runner
         required: true
-        type: choice
-        options:
-          - ubuntu-latest
-          - windows-2019
-          - macos-10.15
+        type: string
+        default: None
 
 env:  # Links to the JDK build under test and the native test libs
   USE_TESTENV_PROPERTIES: true
 
 jobs:
   setup-parallel:
-    runs-on: ${{ inputs.runner }}
-    name: Create AQA parallelList - ${{ inputs.runner }}_${{ matrix.suite }}
+    runs-on: [self-hosted, "1ES.Pool=${{ inputs.pool }}"]
+    name: Create AQA parallelList - ${{ inputs.pool }}_${{ matrix.suite }}
     strategy:
       fail-fast: true
       matrix:
@@ -37,7 +37,7 @@ jobs:
     steps:
       - name: Setup windows environment
         working-directory: ${{ github.workspace }}
-        if: ${{ inputs.runner == 'windows-2019' }}
+        if: ${{ inputs.system == 'windows' }}
         shell: pwsh
         run: |
           curl -o windows-binaries.zip ${{ inputs.customizedSdkUrl }}
@@ -49,7 +49,7 @@ jobs:
 
       - name: Generate parallelList windows - ${{ matrix.suite }}
         uses: adoptium/run-aqa@v2.0.1
-        if: ${{ inputs.runner == 'windows-2019' }}
+        if: ${{ inputs.system == 'windows' }}
         with:
           jdksource: 'customized'
           aqa-testsRepo: ${{ inputs.aqatest-repo }}
@@ -60,12 +60,12 @@ jobs:
 
       - name: Generate parallelList non-windows - ${{ matrix.suite }}
         uses: adoptium/run-aqa@v2.0.1
-        if: ${{ inputs.runner != 'windows-2019' }}
+        if: ${{ inputs.system == 'windows' }}
         with:
           jdksource: 'customized'
           customizedSdkUrl: ${{ inputs.customizedSdkUrl }}
           aqa-testsRepo: ${{ inputs.aqatest-repo }}
-          build_list: ${{ matrix.suite }} # parallellist to generate
+          build_list: ${{ matrix.suite }}
           target: ${{ matrix.suite }} # parallellist to generate
           run_parallel: true
           num_machines: 4
@@ -77,9 +77,9 @@ jobs:
           path: ${{ github.workspace }}/aqa-tests/TKG/parallelList.mk
 
   run-aqa-parallel:
-    runs-on: ${{ inputs.runner }}
+    runs-on: [self-hosted, "1ES.Pool=${{ inputs.pool }}"]
     needs: setup-parallel
-    name: Run AQAvit verification ${{ inputs.runner }} - _${{ matrix.suite }}.${{ matrix.test_list }}
+    name: Run AQAvit verification ${{ inputs.pool }} - _${{ matrix.suite }}.${{ matrix.test_list }}
     strategy:
       fail-fast: false
       matrix:
@@ -94,7 +94,7 @@ jobs:
 
       - name: Setup windows environment
         working-directory: ${{ github.workspace }}
-        if: ${{ inputs.runner == 'windows-2019' }}
+        if: ${{ inputs.system == 'windows' }}
         shell: pwsh
         run: |
           curl -o windows-binaries.zip ${{ inputs.customizedSdkUrl }}
@@ -113,7 +113,7 @@ jobs:
 
       - name: Set TESTIMAGE_PATH
         working-directory: ${{ github.workspace }}
-        if: ${{ inputs.runner == 'ubuntu-latest' || inputs.runner == 'macos-10.15' }}
+        if: ${{ inputs.system == 'linux' || inputs.system == 'macos' }}
         shell: bash
         run: |
           curl -o jdk-binaries.tar.gz ${{ inputs.testImage }}
@@ -124,23 +124,23 @@ jobs:
 
       # Linux specific config for openjdk test suite
       - name: Configure linux
-        if: ${{ inputs.runner == 'ubuntu-latest' }}
+        if: ${{ inputs.system == 'linux' }}
         shell: bash
         run: |
           Xvfb :1 -screen 0 1024x768x16 &
 
-      - name: Run AQA tests parallel (${{ inputs.runner }}) - ${{ matrix.suite }}_${{ matrix.test_list }}
+      - name: Run AQA tests parallel (${{ inputs.system }}) - ${{ matrix.suite }}_${{ matrix.test_list }}
         uses: adoptium/run-aqa@v2.0.1
-        if: ${{ inputs.runner == 'windows-2019' }}
+        if: ${{ inputs.system == 'windows' }}
         with:
           jdksource: 'customized'
           aqa-testsRepo: ${{ inputs.aqatest-repo }}
           build_list: ${{ matrix.suite }}
           target : -f parallelList.mk ${{ matrix.test_list }}
 
-      - name: Run AQA tests parallel (${{ inputs.runner }}) - ${{ matrix.suite }}_${{ matrix.test_list }}
+      - name: Run AQA tests parallel (${{ inputs.system }}) - ${{ matrix.suite }}_${{ matrix.test_list }}
         uses: adoptium/run-aqa@v2.0.1
-        if: ${{ inputs.runner != 'windows-2019' }}
+        if: ${{ inputs.system == 'windows' }}
         with:
           jdksource: 'customized'
           customizedSdkUrl: ${{ inputs.customizedSdkUrl }}
