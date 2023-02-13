@@ -38,7 +38,8 @@ jobs:
           jdksource: 'customized'
           customizedSdkUrl: ${{ inputs.customizedSdkUrl }}
           aqa-testsRepo: ${{ inputs.aqatest-repo }}
-          build_list: ${{ matrix.suite }} # parallellist to generate
+          build_list: ${{ matrix.suite }}
+          target: ${{ matrix.suite }} # parallellist to generate
           run_parallel: ${{ inputs.runParallel }}
           num_machines: 4
 
