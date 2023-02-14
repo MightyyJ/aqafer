@@ -14,8 +14,7 @@ env:  # Links to the JDK build under test and the native test libs
 jobs:
   setup-parallel-docker:
     runs-on: ubuntu-latest
-    container:
-      image: "${{ env.INTERNAL_CONTAINER_REGISTRY }}"
+    container: ${{ env.INTERNAL_CONTAINER_REGISTRY }}
       env:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
