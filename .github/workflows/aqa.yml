@@ -42,7 +42,7 @@ jobs:
     
 
   run_aqa:
-    runs-on: ubuntu-latest #${{ fromJSON(needs.configuration.outputs.agent-config) }}
+    runs-on: ${{ fromJSON(needs.configuration.outputs.agent-config) }}
     needs: configuration
     strategy:
       fail-fast: false
