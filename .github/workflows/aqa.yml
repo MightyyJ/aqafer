@@ -6,31 +6,16 @@ on:
       customizedSdkUrl:
          description: SDK download URL
          required: true
-      testImage:
-        description: Native Libs
-        required: true
-      runParallel:
-        description: Run parallel jobs
-        required: true
-        type: boolean
-      runner:
-        description: runner
-        required: true
-        type: choice
-        options:
-          - ubuntu-latest
-          - windows-2019
-          - macos-10.15
 
 env:  # Links to the JDK build under test and the native test libs
   USE_TESTENV_PROPERTIES: true
+  INTERNAL_CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
 
 jobs:
-
   setup-parallel-docker:
     runs-on: ubuntu-latest
     container:
-      image: ${{ secrets.CONTAINER_REGISTRY }}
+      image: ${{ env.INTERNAL_CONTAINER_REGISTRY }}
       env:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
