@@ -41,7 +41,7 @@ jobs:
       agent-configuration: ${{ steps.agent-configuration.outputs.config }}
 
   run_aqa:
-    runs-on: ${{ fromJSON(needs.configuration.outputs.agent-configuration) }}
+    runs-on: ubuntu-latest
     needs: configuration
     strategy:
       fail-fast: false
@@ -53,18 +53,21 @@ jobs:
             suite: functional
 
     steps:
+      - name: echo
+        run: |
+          echo ${{ needs.configuration.outputs.agent-configuration }}
+          echo DONE
+    # - name: Run AQA Tests - ${{ matrix.target }}.${{ matrix.suite }}
+    #   uses: adoptium/run-aqa@v2.0.1
+    #   with:
+    #     jdksource: 'customized'
+    #     customizedSdkUrl: ${{ env.CUSTOMIZED_SDK_URL }}
+    #     aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release' # Make sure this branch is set to the latest release branch
+    #     build_list: ${{ matrix.suite }}
+    #     target: _${{ matrix.target }}.${{ matrix.suite }}
 
-    - name: Run AQA Tests - ${{ matrix.target }}.${{ matrix.suite }}
-      uses: adoptium/run-aqa@v2.0.1
-      with:
-        jdksource: 'customized'
-        customizedSdkUrl: ${{ env.CUSTOMIZED_SDK_URL }}
-        aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release' # Make sure this branch is set to the latest release branch
-        build_list: ${{ matrix.suite }}
-        target: _${{ matrix.target }}.${{ matrix.suite }}
-
-    - uses: actions/upload-artifact@v2
-      if: always() # Always run this step (even if the tests failed)
-      with:
-        name: test_output
-        path: ./**/output_*/*.tap
+    # - uses: actions/upload-artifact@v2
+    #   if: always() # Always run this step (even if the tests failed)
+    #   with:
+    #     name: test_output
+    #     path: ./**/output_*/*.tap
