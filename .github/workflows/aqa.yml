@@ -28,18 +28,15 @@ env:  # Links to the JDK build under test and the native test libs
 jobs:
 
   setup-parallel-docker:
-    ${{ if inputs.system == 'Alpine' }}:
-      runs-on: ubuntu-latest
-      container:
-        image: ${{ secrets.CONTAINER_REGISTRY }}
-        env:
-          USE_TESTENV_PROPERTIES: true
-        options: --cpus 1
-        credentials:
-          username: ${{ secrets.ACR_TOKEN_NAME }}
-          password: ${{ secrets.AZURE_ACR_TOKEN_PASS1 }}
-    ${{ if inputs.system != 'Alpine' }}:
-      runs-on: ${{ inputs.runner }}
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ secrets.CONTAINER_REGISTRY }}
+      env:
+        USE_TESTENV_PROPERTIES: true
+      options: --cpus 1
+      credentials:
+        username: ${{ secrets.ACR_TOKEN_NAME }}
+        password: ${{ secrets.AZURE_ACR_TOKEN_PASS1 }}
     strategy:
       fail-fast: true
       matrix:
