@@ -31,7 +31,7 @@ jobs:
     ${{ if inputs.system == 'Alpine' }}:
       runs-on: ubuntu-latest
       container:
-        image: mycoolregistry2023.azurecr.io/samples/alpine:latest
+        image: ${{ secrets.CONTAINER_REGISTRY }}
         env:
           USE_TESTENV_PROPERTIES: true
         options: --cpus 1
