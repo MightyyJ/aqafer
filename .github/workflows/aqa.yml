@@ -14,8 +14,13 @@ env:  # Links to the JDK build under test and the native test libs
 jobs:
   test-set-output:
     runs-on: ubuntu-latest
+    steps:
+      - name: set output
+        id: set-output
+        run: |
+          echo "image=${{ env.INTERNAL_CONTAINER_REGISTRY }}" >> $GITHUB_OUTPUT
     outputs:
-      image: ${{ env.INTERNAL_CONTAINER_REGISTRY }}
+      image: ${{ steps.set-output.outputs.image }}
 
   setup-parallel-docker:
     runs-on: ubuntu-latest
