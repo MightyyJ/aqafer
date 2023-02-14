@@ -46,10 +46,10 @@ jobs:
             echo "::set-output name=config::['self-hosted', 'windows', 'ARM64']"
           fi
           if [[ ${{ inputs.pool }} == "*ubuntu20.04-x64*" ]]; then
-            echo "::set-output name=config::['self-hosted', 'ubuntu', 'x64']"
+            echo "::set-output name=config::['self-hosted', 'linux', 'x64']"
           fi
           if [[ ${{ inputs.pool }} == "*ubuntu20.04-aarch64*" ]]; then
-            echo "::set-output name=config::['self-hosted', 'ubuntu', 'ARM64']"
+            echo "::set-output name=config::['self-hosted', 'linux', 'ARM64']"
           fi
 
     outputs:
