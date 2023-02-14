@@ -12,9 +12,16 @@ env:  # Links to the JDK build under test and the native test libs
   INTERNAL_CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
 
 jobs:
+  test-set-output:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ env.INTERNAL_CONTAINER_REGISTRY }}
+
   setup-parallel-docker:
     runs-on: ubuntu-latest
-    container: ${{ env.INTERNAL_CONTAINER_REGISTRY }}
+    needs: test-set-output
+    container:
+      image: ${{ needs.test-set-output.outputs.image }}
       env:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
