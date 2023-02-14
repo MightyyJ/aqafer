@@ -15,7 +15,7 @@ jobs:
   setup-parallel-docker:
     runs-on: ubuntu-latest
     container:
-      image: ${{ env.INTERNAL_CONTAINER_REGISTRY }}
+      image: "${{ env.INTERNAL_CONTAINER_REGISTRY }}"
       env:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
