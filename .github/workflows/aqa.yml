@@ -14,9 +14,11 @@ env:  # Links to the JDK build under test and the native test libs
 jobs:
   configuration:
     runs-on: ubuntu-latest
+    outputs:
+      agent-config: ${{ steps.step1.outputs.config }}
     steps:
       - name: Select agent
-        id: agent-configurtation
+        id: step1
         run: |
           if [[ ${{ inputs.pool }} == "*macos-x64*" ]]; then
             echo "config=[macos-10.15]" >> $GITHUB_OUTPUT
@@ -37,8 +39,7 @@ jobs:
             echo "config=['self-hosted', 'linux', 'ARM64']" >> $GITHUB_OUTPUT
           fi
 
-    outputs:
-      agent-configuration: ${{ steps.agent-configuration.outputs.config }}
+    
 
   run_aqa:
     runs-on: ubuntu-latest
@@ -55,7 +56,7 @@ jobs:
     steps:
       - name: echo
         run: |
-          echo ${{ needs.configuration.outputs.agent-configuration }}
+          echo ${{ needs.configuration.outputs.agent-config }}
           echo DONE
     # - name: Run AQA Tests - ${{ matrix.target }}.${{ matrix.suite }}
     #   uses: adoptium/run-aqa@v2.0.1
