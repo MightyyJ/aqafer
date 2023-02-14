@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test-set-output
     container:
-      image: ${{ needs.test-set-output.outputs.image }}
+      image: mycoolregistry2023.azurecr.io/samples/alpine:latest
       env:
         USE_TESTENV_PROPERTIES: true
       options: --cpus 1
