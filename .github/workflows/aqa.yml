@@ -37,11 +37,11 @@ jobs:
             echo "::set-output name=config::['self-hosted', 'linux', 'ARM64']"
           fi
 
-    outputs:
-      agent-configuration: ${{ steps.agent-configuration.outputs.config }}
+    # outputs:
+    #   agent-configuration: ${{ steps.agent-configuration.outputs.config }}
 
   run_aqa:
-    runs-on: ${{ fromJSON(needs.configuration.outputs.agent-configuration) }}
+    runs-on: ${{ fromJSON(needs.configuration.outputs.config) }}
     needs: configuration
     strategy:
       fail-fast: false
