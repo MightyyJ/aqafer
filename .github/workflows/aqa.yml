@@ -2,14 +2,47 @@ name: Run AQAvit
 
 on:
   workflow_dispatch: # Allows the job to be manually triggered
+    inputs:
+      pool:
+        descrption: pool
+        required: true
 
 env:  # Links to the JDK build under test and the native test libs
   USE_TESTENV_PROPERTIES: true
   CUSTOMIZED_SDK_URL: https://aka.ms/download-jdk/microsoft-jdk-11.0.18-linux-x64.tar.gz
 
 jobs:
-  run_aqa:
+  configuration:
     runs-on: ubuntu-latest
+    steps:
+      - name: Select agent
+        id: agent-configurtation
+        run: |
+          if [[ ${{ inputs.pool }} == "*macos-x64*" ]]; then
+            echo "::set-output name=config::[macos-10.15]"
+          fi
+          if [[ ${{ inputs.pool }} == "*macos-arm64*" ]]; then
+            echo "::set-output name=config::['self-hosted', 'MacOS', 'ARM64']"
+          fi
+          if [[ ${{ inputs.pool }} == "*windows2019-x64*" ]]; then
+            echo "::set-output name=config::['self-hosted', 'windows', 'x64']"
+          fi
+          if [[ ${{ inputs.pool }} == "*windows2022-aarch64*" ]]; then
+            echo "::set-output name=config::['self-hosted', 'windows', 'ARM64']"
+          fi
+          if [[ ${{ inputs.pool }} == "*ubuntu20.04-x64*" ]]; then
+            echo "::set-output name=config::['self-hosted', 'linux', 'x64']"
+          fi
+          if [[ ${{ inputs.pool }} == "*ubuntu20.04-aarch64*" ]]; then
+            echo "::set-output name=config::['self-hosted', 'linux', 'ARM64']"
+          fi
+
+    outputs:
+      agent-configuration: ${{ steps.agent-configuration.outputs.config }}
+
+  run_aqa:
+    runs-on: ${{ fromJSON(needs.configuration.outputs.agent-configuration) }}
+    needs: configuration
     strategy:
       fail-fast: false
       matrix:
