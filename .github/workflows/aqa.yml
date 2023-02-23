@@ -31,7 +31,7 @@ jobs:
         name: Generate parallelList - ${{ matrix.suite }}
         with:
           jdksource: 'customized'
-          customizedSdkUrl: ${{ inputs.customizedSdkUrlMasked }}
+          customizedSdkUrlMasked: ${{ inputs.customizedSdkUrlMasked }}
           aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release'
           build_list: ${{ matrix.suite }} # parallellist to generate
           target: ${{ matrix.suite }}
@@ -64,7 +64,7 @@ jobs:
         uses: j-braley/run-aqa@v2.0.3
         with:
           jdksource: 'customized'
-          customizedSdkUrl: ${{ inputs.customizedSdkUrlMasked }}
+          customizedSdkUrlMasked: ${{ inputs.customizedSdkUrlMasked }}
           aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release'
           build_list: ${{ matrix.suite }}
           target : -f parallelList.mk ${{ matrix.test_list }}
