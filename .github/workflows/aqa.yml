@@ -31,7 +31,7 @@ jobs:
         name: Generate parallelList - ${{ matrix.suite }}
         with:
           jdksource: 'customized'
-          customizedSdkUrlMasked: ${{ inputs.customizedSdkUrlMasked }}
+          customizedSdkUrlMasked: ${{ secrets[inputs.customizedSdkUrlMasked] }}
           aqa-testsRepo: 'adoptium/aqa-tests:v0.9.6-release'
           build_list: ${{ matrix.suite }} # parallellist to generate
           target: ${{ matrix.suite }}
